@@ -1,23 +1,16 @@
 // This is a generated file. Do not edit directly.
 
-module k8s.io/apiextensions-apiserver
+module github.com/raushan2016/crd-apiserver
 
 go 1.12
 
 require (
-	github.com/go-openapi/errors v0.19.2
-	github.com/go-openapi/spec v0.19.2
-	github.com/go-openapi/strfmt v0.19.0
-	github.com/go-openapi/validate v0.19.2
 	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d
 	github.com/google/go-cmp v0.3.0
-	github.com/google/gofuzz v1.0.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.3
-	k8s.io/api v0.0.0-20191016225839-816a9b7df678
 	k8s.io/apimachinery v0.0.0-20191017185446-6e68a40eebf9
 	k8s.io/apiserver v0.0.0-20191017190126-26d3e9acc5bf
-	k8s.io/client-go v0.0.0-20191016230210-14c42cd304d9
 	k8s.io/component-base v0.0.0-20191016230640-d338b9159fb6
 	k8s.io/klog v1.0.0
 	k8s.io/utils v0.0.0-20191010214722-8d271d903fe4

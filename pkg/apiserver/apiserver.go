@@ -17,8 +17,8 @@ limitations under the License.
 package apiserver
 
 import (
-	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/install"
-	"k8s.io/apiextensions-apiserver/pkg/registry/customresourcedefinition"
+	"github.com/raushan2016/crd-apiserver/pkg/apis/apiextensions/install"
+	"github.com/raushan2016/crd-apiserver/pkg/registry/customresourcedefinition"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -104,14 +104,14 @@ func (cfg *Config) Complete() CompletedConfig {
 	return CompletedConfig{&c}
 }
 
-const GroupName = "apiextensions.k8s.io"
+const GroupName = "instance.raushank.io"
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1beta1"}
 
 // New returns a new instance of CustomResourceDefinitions from the given config.
 func (c completedConfig) New() (*CustomResourceDefinitions, error) {
-	genericServer, err := c.GenericConfig.New("apiextensions-apiserver", genericapiserver.NewEmptyDelegate())
+	genericServer, err := c.GenericConfig.New("raushankapiserver", genericapiserver.NewEmptyDelegate())
 	if err != nil {
 		return nil, err
 	}

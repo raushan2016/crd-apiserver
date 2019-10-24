@@ -23,25 +23,24 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"k8s.io/apiextensions-apiserver/pkg/apiserver"
+	"github.com/raushan2016/crd-apiserver/pkg/apiserver"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 	genericoptions "k8s.io/apiserver/pkg/server/options"
 )
 
-const defaultEtcdPathPrefix = "/registry/apiextensions.kubernetes.io"
+const defaultEtcdPathPrefix = "/registry/instance.raushank.io"
 
 // CustomResourceDefinitionsServerOptions describes the runtime options of an apiextensions-apiserver.
 type CustomResourceDefinitionsServerOptions struct {
 	RecommendedOptions *genericoptions.RecommendedOptions
-	APIEnablement      *genericoptions.APIEnablementOptions
-
-	StdOut io.Writer
-	StdErr io.Writer
+	Admission          *genericoptions.AdmissionOptions
+	StdOut             io.Writer
+	StdErr             io.Writer
 }
 
-const GroupName = "apiextensions.k8s.io"
+const GroupName = "instance.raushank.io"
 
 // SchemeGroupVersion is group version used to register these objects
 var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1beta1"}
@@ -52,9 +51,9 @@ func NewCustomResourceDefinitionsServerOptions(out, errOut io.Writer) *CustomRes
 		RecommendedOptions: genericoptions.NewRecommendedOptions(
 			defaultEtcdPathPrefix,
 			apiserver.Codecs.LegacyCodec(SchemeGroupVersion),
-			genericoptions.NewProcessInfo("apiextensions-apiserver", "kube-system"),
+			genericoptions.NewProcessInfo("raushankapiserver", "mir-apiserver-system"),
 		),
-		APIEnablement: genericoptions.NewAPIEnablementOptions(),
+		Admission: genericoptions.NewAdmissionOptions(),
 
 		StdOut: out,
 		StdErr: errOut,
@@ -66,14 +65,14 @@ func NewCustomResourceDefinitionsServerOptions(out, errOut io.Writer) *CustomRes
 // AddFlags adds the apiextensions-apiserver flags to the flagset.
 func (o CustomResourceDefinitionsServerOptions) AddFlags(fs *pflag.FlagSet) {
 	o.RecommendedOptions.AddFlags(fs)
-	o.APIEnablement.AddFlags(fs)
+	o.Admission.AddFlags(fs)
 }
 
 // Validate validates the apiextensions-apiserver options.
 func (o CustomResourceDefinitionsServerOptions) Validate() error {
 	errors := []error{}
 	errors = append(errors, o.RecommendedOptions.Validate()...)
-	errors = append(errors, o.APIEnablement.Validate(apiserver.Scheme)...)
+	errors = append(errors, o.Admission.Validate()...)
 	return utilerrors.NewAggregate(errors)
 }
 
@@ -91,9 +90,6 @@ func (o CustomResourceDefinitionsServerOptions) Config() (*apiserver.Config, err
 
 	serverConfig := genericapiserver.NewRecommendedConfig(apiserver.Codecs)
 	if err := o.RecommendedOptions.ApplyTo(serverConfig); err != nil {
-		return nil, err
-	}
-	if err := o.APIEnablement.ApplyTo(&serverConfig.Config, apiserver.DefaultAPIResourceConfigSource(), apiserver.Scheme); err != nil {
 		return nil, err
 	}
 

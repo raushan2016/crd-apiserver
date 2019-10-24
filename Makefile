@@ -1,7 +1,7 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= mir-sync-controllers:latest
-OUTPUTSPECPATH ?= bin/generatedSpecs.yaml
+IMG ?= raushan2016/crd-apiserver:latest1
+OUTPUT ?= ./bin/final.yaml
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 DEV_CONTROLLER_ID ?= $(shell whoami)
@@ -18,23 +18,26 @@ endif
 mod:
 	go mod tidy
 
-# Build manager binary
-manager: fmt vet
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/manager main.go
+# Build apiserver binary
+manager: mod fmt vet
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o bin/apiserver main.go
+
+generate:
+	kustomize build config -o ${OUTPUT}
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: fmt vet manifests
 	go run ./main.go
 
 # Deploy controller in the configured Kubernetes cluster in ~/.kube/config
-deploy: generateOutputSpecs
-	kubectl apply -f ${OUTPUTSPECPATH}
+deploy:
+	kubectl apply -f ${OUTPUT}
 
 dev-deploy: manifests docker-build docker-push deploy
 
 # Deletes controller in the configured Kubernetes cluster in ~/.kube/config
 undeploy:
-	kustomize build config/default | kubectl delete -f -
+	kubectl delete -f ${OUTPUT}
 
 # Run go fmt against code
 fmt:
@@ -47,7 +50,7 @@ vet:
 docker-all: docker-build docker-push
 
 # Build the docker image
-docker-build: manager
+docker-build:
 	docker build . -t ${IMG}
 
 # Push the docker image

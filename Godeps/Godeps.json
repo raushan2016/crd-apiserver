@@ -1,5 +1,5 @@
 {
-	"ImportPath": "k8s.io/apiextensions-apiserver",
+	"ImportPath": "github.com/raushan2016/crd-apiserver",
 	"GoVersion": "unknown",
 	"GodepVersion": "gen-godeps",
 	"Packages": [

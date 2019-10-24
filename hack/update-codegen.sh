@@ -28,7 +28,7 @@ CODEGEN_PKG=${CODEGEN_PKG:-$(cd "${SCRIPT_ROOT}"; ls -d -1 ./vendor/k8s.io/code-
 CLIENTSET_NAME_VERSIONED=clientset \
 CLIENTSET_NAME_INTERNAL=internalclientset \
 bash "${CODEGEN_PKG}/generate-internal-groups.sh" deepcopy,client,lister,informer,conversion \
-  k8s.io/apiextensions-apiserver/pkg/client k8s.io/apiextensions-apiserver/pkg/apis k8s.io/apiextensions-apiserver/pkg/apis \
+  github.com/raushan2016/crd-apiserver/pkg/client github.com/raushan2016/crd-apiserver/pkg/apis github.com/raushan2016/crd-apiserver/pkg/apis \
   "apiextensions:v1beta1,v1" \
   --output-base "$(dirname "${BASH_SOURCE[0]}")/../../.." \
   --go-header-file "${SCRIPT_ROOT}/hack/boilerplate.go.txt"

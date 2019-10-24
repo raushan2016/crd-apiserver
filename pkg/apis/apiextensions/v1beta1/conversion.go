@@ -21,7 +21,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/json"
 
-	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions"
+	"github.com/raushan2016/crd-apiserver/pkg/apis/apiextensions"
 )
 
 func addConversionFuncs(scheme *runtime.Scheme) error {
