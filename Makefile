@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= raushan2016/crd-apiserver:latest1
+IMG ?= raushan2016/crd-apiserver1:latest
 OUTPUT ?= ./bin/final.yaml
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
@@ -50,7 +50,7 @@ vet:
 docker-all: docker-build docker-push
 
 # Build the docker image
-docker-build:
+docker-build: manager
 	docker build . -t ${IMG}
 
 # Push the docker image

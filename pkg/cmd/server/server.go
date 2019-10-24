@@ -44,8 +44,10 @@ func NewServerCommand(out, errOut io.Writer, stopCh <-chan struct{}) *cobra.Comm
 		},
 	}
 
-	fs := cmd.Flags()
-	o.AddFlags(fs)
+	flags := cmd.Flags()
+	o.RecommendedOptions.AddFlags(flags)
+	// RecommendedOptions already does this
+	//o.Admission.AddFlags(flags)
 	return cmd
 }
 

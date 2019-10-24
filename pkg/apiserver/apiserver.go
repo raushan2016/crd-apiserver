@@ -24,11 +24,8 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/version"
-	genericregistry "k8s.io/apiserver/pkg/registry/generic"
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
-	serverstorage "k8s.io/apiserver/pkg/server/storage"
-	"k8s.io/apiserver/pkg/util/webhook"
 )
 
 var (
@@ -56,27 +53,12 @@ func init() {
 	Scheme.AddUnversionedTypes(unversionedVersion, unversionedTypes...)
 }
 
-type ExtraConfig struct {
-	CRDRESTOptionsGetter genericregistry.RESTOptionsGetter
-
-	// MasterCount is used to detect whether cluster is HA, and if it is
-	// the CRD Establishing will be hold by 5 seconds.
-	MasterCount int
-
-	// ServiceResolver is used in CR webhook converters to resolve webhook's service names
-	ServiceResolver webhook.ServiceResolver
-	// AuthResolverWrapper is used in CR webhook converters
-	AuthResolverWrapper webhook.AuthenticationInfoResolverWrapper
-}
-
 type Config struct {
 	GenericConfig *genericapiserver.RecommendedConfig
-	ExtraConfig   ExtraConfig
 }
 
 type completedConfig struct {
 	GenericConfig genericapiserver.CompletedConfig
-	ExtraConfig   *ExtraConfig
 }
 
 type CompletedConfig struct {
@@ -92,10 +74,8 @@ type CustomResourceDefinitions struct {
 func (cfg *Config) Complete() CompletedConfig {
 	c := completedConfig{
 		cfg.GenericConfig.Complete(),
-		&cfg.ExtraConfig,
 	}
 
-	c.GenericConfig.EnableDiscovery = false
 	c.GenericConfig.Version = &version.Info{
 		Major: "0",
 		Minor: "1",
@@ -120,32 +100,19 @@ func (c completedConfig) New() (*CustomResourceDefinitions, error) {
 		GenericAPIServer: genericServer,
 	}
 
-	apiResourceConfig := c.GenericConfig.MergedResourceConfig
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(GroupName, Scheme, metav1.ParameterCodec, Codecs)
 
-	if apiResourceConfig.VersionEnabled(SchemeGroupVersion) {
-		storage := map[string]rest.Storage{}
-		// customresourcedefinitions
-		customResourceDefintionStorage := customresourcedefinition.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
-		storage["customresourcedefinitions"] = customResourceDefintionStorage
-		storage["customresourcedefinitions/status"] = customresourcedefinition.NewStatusREST(Scheme, customResourceDefintionStorage)
+	storage := map[string]rest.Storage{}
+	// customresourcedefinitions
+	customResourceDefintionStorage := customresourcedefinition.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
+	storage["testings"] = customResourceDefintionStorage
+	storage["testings/status"] = customresourcedefinition.NewStatusREST(Scheme, customResourceDefintionStorage)
 
-		apiGroupInfo.VersionedResourcesStorageMap[SchemeGroupVersion.Version] = storage
-	}
+	apiGroupInfo.VersionedResourcesStorageMap[SchemeGroupVersion.Version] = storage
 
 	if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {
 		return nil, err
 	}
 
 	return s, nil
-}
-
-func DefaultAPIResourceConfigSource() *serverstorage.ResourceConfig {
-	ret := serverstorage.NewResourceConfig()
-	// NOTE: GroupVersions listed here will be enabled by default. Don't put alpha versions in the list.
-	ret.EnableVersions(
-		SchemeGroupVersion,
-	)
-
-	return ret
 }

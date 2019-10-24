@@ -21,8 +21,6 @@ import (
 	"io"
 	"net"
 
-	"github.com/spf13/pflag"
-
 	"github.com/raushan2016/crd-apiserver/pkg/apiserver"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
@@ -60,12 +58,6 @@ func NewCustomResourceDefinitionsServerOptions(out, errOut io.Writer) *CustomRes
 	}
 
 	return o
-}
-
-// AddFlags adds the apiextensions-apiserver flags to the flagset.
-func (o CustomResourceDefinitionsServerOptions) AddFlags(fs *pflag.FlagSet) {
-	o.RecommendedOptions.AddFlags(fs)
-	o.Admission.AddFlags(fs)
 }
 
 // Validate validates the apiextensions-apiserver options.
